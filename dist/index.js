@@ -5005,6 +5005,13 @@ module.exports = require("stream");
 
 /***/ }),
 
+/***/ 417:
+/***/ (function(module) {
+
+module.exports = require("crypto");
+
+/***/ }),
+
 /***/ 427:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -5066,6 +5073,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -5074,26 +5084,25 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = __importDefault(__webpack_require__(417));
 const core = __importStar(__webpack_require__(470));
 const github_1 = __webpack_require__(469);
-function getPrNumber() {
-    const pullRequest = github_1.context.payload.pull_request;
-    if (!pullRequest || !pullRequest.number) {
-        throw 'Could not get pull request number from context, exiting';
-    }
-    return pullRequest.number;
-}
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        const repoToken = core.getInput('repo-token', { required: true });
-        const awsToken = core.getInput('aws-token', { required: true });
-        const bucketName = core.getInput('bucket-name', { required: true });
-        const prNumber = getPrNumber();
-        // const client = new GitHub(repoToken)
-        // const pr = client.pulls.get({
-        //   owner:
-        // })
-        console.log(`Event for pr #${prNumber} with payload ${JSON.stringify(github_1.context.payload)}. Config passed is: repoToken: ${repoToken}, awsToken: ${awsToken}, bucketName: ${bucketName}`);
+        if (github_1.context.payload.action !== 'labeled') {
+            core.setOutput('hasLabel', 'false');
+            return;
+        }
+        const { label } = github_1.context.payload;
+        if (!label || typeof label.name !== 'string' || !label.name.startsWith('env:')) {
+            core.setOutput('hasLabel', 'false');
+            return;
+        }
+        const name = crypto_1.default.randomBytes(8).toString('hex');
+        const [, env] = label.name.split(':');
+        core.setOutput('hasLabel', 'true');
+        core.setOutput('name', name);
+        core.setOutput('env', env);
     });
 }
 try {

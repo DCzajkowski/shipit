@@ -1,34 +1,26 @@
+import crypto from 'crypto'
 import * as core from '@actions/core'
-import { GitHub, context } from '@actions/github'
-
-function getPrNumber(): number {
-  const pullRequest = context.payload.pull_request
-
-  if (!pullRequest || !pullRequest.number) {
-    throw 'Could not get pull request number from context, exiting'
-  }
-
-  return pullRequest.number
-}
+import { context } from '@actions/github'
 
 async function main() {
-  const repoToken = core.getInput('repo-token', { required: true })
-  const awsToken = core.getInput('aws-token', { required: true })
-  const bucketName = core.getInput('bucket-name', { required: true })
+  if (context.payload.action !== 'labeled') {
+    core.setOutput('hasLabel', 'false')
+    return
+  }
 
-  const prNumber = getPrNumber()
+  const { label } = context.payload as Payload
 
-  // const client = new GitHub(repoToken)
+  if (!label || typeof label.name !== 'string' || !label.name.startsWith('env:')) {
+    core.setOutput('hasLabel', 'false')
+    return
+  }
 
-  // const pr = client.pulls.get({
-  //   owner:
-  // })
+  const name = crypto.randomBytes(8).toString('hex')
+  const [, env] = label.name.split(':')
 
-  console.log(
-    `Event for pr #${prNumber} with payload ${JSON.stringify(
-      context.payload
-    )}. Config passed is: repoToken: ${repoToken}, awsToken: ${awsToken}, bucketName: ${bucketName}`
-  )
+  core.setOutput('hasLabel', 'true')
+  core.setOutput('name', name)
+  core.setOutput('env', env)
 }
 
 try {
