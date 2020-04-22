@@ -3,14 +3,16 @@ import * as core from '@actions/core'
 import { context } from '@actions/github'
 
 async function main() {
-  if (context.payload.action !== 'labeled') {
-    core.setOutput('hasLabel', 'false')
+  if (context.eventName !== 'pull_request') {
+    console.log('The event does not apply to a PR. Skiping...')
     return
   }
 
-  const { label } = context.payload as Payload
+  const labels = context.payload.pull_request!.labels
+  const label = labels.find(({ name }) => name.startsWith('env:'))
 
-  if (!label || typeof label.name !== 'string' || !label.name.startsWith('env:')) {
+  if (!label) {
+    console.log('The PR does not have a `env:*` label. Skiping...')
     core.setOutput('hasLabel', 'false')
     return
   }
@@ -22,6 +24,7 @@ async function main() {
   core.setOutput('hasLabel', 'true')
   core.setOutput('name', name)
   core.setOutput('env', env)
+  console.log('The PR was identified to have a label with env: ', env, '. The PR name is:', name)
 }
 
 try {
