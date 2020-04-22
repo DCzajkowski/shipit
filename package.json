@@ -1,0 +1,24 @@
+{
+  "name": "shipit",
+  "version": "0.1.0",
+  "description": "GitHub Action for deploying frontend code to S3",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && ncc build",
+    "lint": "prettier --write src/*.ts"
+  },
+  "repository": "git@github.com:airly-eu/shipit.git",
+  "author": "Dariusz Czajkowski <dare.czajkowski@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@actions/core": "^1.2.3",
+    "@actions/github": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^13.13.1",
+    "@zeit/ncc": "^0.22.1",
+    "prettier": "^2.0.5",
+    "typescript": "^3.8.3"
+  }
+}

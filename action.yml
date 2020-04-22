@@ -1,0 +1,13 @@
+name: 'shipit'
+description: 'GitHub Action for deploying frontend code to S3'
+author: 'Dariusz Czajkowski <dare.czajkowski@gmail.com>'
+inputs:
+  repo-token:
+    description: 'The GITHUB_TOKEN secret'
+  aws-token:
+    description: 'The AWS token to upload to S3'
+  bucket-name:
+    description: 'The name of a bucket to upload built files to'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
