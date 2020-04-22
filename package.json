@@ -7,7 +7,7 @@
     "build": "tsc && ncc build",
     "lint": "prettier --write src/*.ts"
   },
-  "repository": "git@github.com:airly-eu/shipit.git",
+  "repository": "git@github.com:dczajkowski/shipit.git",
   "author": "Dariusz Czajkowski <dare.czajkowski@gmail.com>",
   "license": "MIT",
   "private": true,
