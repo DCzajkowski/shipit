@@ -1,4 +1,4 @@
-# deploy-to-s3
+# shipit
 
 @todo include these details:
 
