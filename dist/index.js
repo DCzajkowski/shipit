@@ -5089,20 +5089,24 @@ const core = __importStar(__webpack_require__(470));
 const github_1 = __webpack_require__(469);
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        if (github_1.context.payload.action !== 'labeled') {
+        if (github_1.context.eventName !== 'pull_request') {
+            console.log('The event does not apply to a PR. Skiping...');
+            return;
+        }
+        const labels = github_1.context.payload.pull_request.labels;
+        const label = labels.find(({ name }) => name.startsWith('env:'));
+        if (!label) {
+            console.log('The PR does not have a `env:*` label. Skiping...');
             core.setOutput('hasLabel', 'false');
             return;
         }
-        const { label } = github_1.context.payload;
-        if (!label || typeof label.name !== 'string' || !label.name.startsWith('env:')) {
-            core.setOutput('hasLabel', 'false');
-            return;
-        }
-        const name = crypto_1.default.randomBytes(8).toString('hex');
+        const prNumber = github_1.context.payload.pull_request.number;
+        const name = crypto_1.default.createHash('md5').update(String(prNumber)).digest('hex');
         const [, env] = label.name.split(':');
         core.setOutput('hasLabel', 'true');
         core.setOutput('name', name);
         core.setOutput('env', env);
+        console.log('The PR was identified to have a label with env: ', env, '. The PR name is:', name);
     });
 }
 try {
